@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration
 import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.ImportResource
 import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
@@ -35,6 +36,7 @@ import javax.servlet.http.HttpServletResponse
  * User: danielwoods
  * Date: 11/16/13
  */
+@ComponentScan("net.opihackday.agileniagara")
 @EnableAutoConfiguration
 @EnableWebSecurity
 @Controller
@@ -59,11 +61,6 @@ class App extends WebSecurityConfigurerAdapter {
   @RequestMapping("/")
   String hello() {
     "index"
-  }
-
-  @RequestMapping("/whoami")
-  @ResponseBody String whoami() {
-    SecurityContextHolder.context.authentication.principal
   }
 
   @RequestMapping("/auth")
