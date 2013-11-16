@@ -2,6 +2,7 @@ apply plugin: 'groovy'
 apply plugin: 'idea'
 
 repositories {
+  mavenLocal()
   maven {
     url 'http://repo.spring.io/milestone'
   }
@@ -13,7 +14,12 @@ dependencies {
 
   compile 'org.codehaus.groovy.modules.http-builder:http-builder:0.6'
 
-  ['web', 'security', 'integration', 'amqp'].each { module ->
+  compile 'org.springframework.integration:spring-integration-amqp:2.2.6.RELEASE'
+  compile 'org.springframework.integration:spring-integration-ip:2.2.6.RELEASE'
+
+  compile "org.thymeleaf:thymeleaf-spring3:2.0.17"
+
+  ['web', 'security'].each { module ->
     compile "org.springframework.boot:spring-boot-starter-$module:0.5.0.M6"
   }
 }

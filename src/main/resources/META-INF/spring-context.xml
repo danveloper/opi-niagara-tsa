@@ -29,7 +29,14 @@
     <rabbit:template id="userServiceRabbitTemplate" connection-factory="connectionFactory" exchange="userService" />
 
     <channel id="user-service-req"/>
-    <amqp:outbound-channel-adapter amqp-template="userServiceRabbitTemplate" channel="user-service-req" />
-    <gateway default-request-channel="user-service-req"
+<!--    <amqp:outbound-channel-adapter amqp-template="userServiceRabbitTemplate" channel="user-service-req" />-->
+    <gateway id="remoteUserServiceGateway"
+             default-request-channel="user-service-req"
              service-interface="net.opihackday.agileniagara.service.RemoteUserService" />
+
+    <chain input-channel="user-service-req">
+        <service-activator method="getUserByEmail">
+            <beans:bean class="net.opihackday.agileniagara.service.StubRemoteUserService" />
+        </service-activator>
+    </chain>
 </beans:beans>

@@ -3,6 +3,7 @@ package net.opihackday.agileniagara
 import groovy.json.JsonSlurper
 import groovyx.net.http.HTTPBuilder
 import net.opihackday.agileniagara.security.NiagaraAuthenticationProvider
+import net.opihackday.agileniagara.service.RemoteUserService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.SpringApplication
@@ -10,14 +11,20 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.ImportResource
 import org.springframework.security.authentication.AuthenticationProvider
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
+import org.springframework.security.core.authority.SimpleGrantedAuthority
+import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.web.authentication.RememberMeServices
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.ResponseBody
+import sun.plugin.liveconnect.SecurityContextHelper
 
+import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 /**
  * User: danielwoods
@@ -38,10 +45,15 @@ class App extends WebSecurityConfigurerAdapter {
   @Autowired
   HTTPBuilder googleHttpBuilder
 
-  @RequestMapping("/hi")
-  @ResponseBody
+  @Autowired
+  RemoteUserService remoteUserService
+
+  @Autowired
+  RememberMeServices rememberMeServices
+
+  @RequestMapping("/")
   String hello() {
-    "Hello"
+    "index"
   }
 
   @RequestMapping("/auth")
@@ -56,8 +68,7 @@ class App extends WebSecurityConfigurerAdapter {
 
   @RequestMapping("/nofakes")
   @ResponseBody
-  String nofakes(@RequestParam('code') String code, HttpServletResponse response) {
-    println code
+  String nofakes(@RequestParam('code') String code, HttpServletRequest request, HttpServletResponse response) {
     Map idResp = googleHttpBuilder.post(path: "/o/oauth2/token",body : [
       code: code,
       "client_id": clientId,
@@ -67,12 +78,15 @@ class App extends WebSecurityConfigurerAdapter {
 
     Map userInfo = new JsonSlurper().parseText("https://www.googleapis.com/oauth2/v1/tokeninfo?id_token=$idResp.id_token".toURL().text)
     def email = userInfo.email
-  }
 
-  @RequestMapping("/login")
-  @ResponseBody
-  String login(@RequestParam('foo') String foo) {
-    "LOL HI"
+    Map user = remoteUserService.getUserByEmail(email)
+    List authorities = user.authorities?.collect { String grant -> new SimpleGrantedAuthority(grant) }
+
+    def auth = new UsernamePasswordAuthenticationToken(email, "", authorities)
+    SecurityContextHolder.context.authentication = auth
+    rememberMeServices.loginSuccess(request, response, auth)
+
+    response.sendRedirect("/")
   }
 
   @Bean
@@ -88,7 +102,7 @@ class App extends WebSecurityConfigurerAdapter {
   protected void configure(HttpSecurity http) throws Exception {
     http
       .authorizeRequests()
-      .antMatchers("/hi").hasRole("USER")
+      .antMatchers("/").hasRole("USER")
       .and().authenticationProvider(authenticationProvider())
 
   }
