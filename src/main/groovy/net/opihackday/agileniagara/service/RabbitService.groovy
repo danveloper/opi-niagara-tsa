@@ -22,8 +22,8 @@ class RabbitService {
         (Map)rabbitTemplate.convertSendAndReceive(USER_EXCHANGE, "lookup", email)
     }
 
-    List getSeasons() {
-        (List)rabbitTemplate.convertSendAndReceive(BOOKING_EXCHANGE, "season.list", [:])
+    List getSeasons(String email) {
+        (List)rabbitTemplate.convertSendAndReceive(BOOKING_EXCHANGE, "season.list", [username:email])
     }
 
     List getLocations() {

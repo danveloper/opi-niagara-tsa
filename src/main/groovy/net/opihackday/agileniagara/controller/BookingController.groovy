@@ -17,7 +17,8 @@ class BookingController {
 
     @RequestMapping("/api/season")
     String listSeasons() {
-        return rabbitService.getSeasons();
+        String email = SecurityContextHolder?.context?.authentication?.principal;
+        return rabbitService.getSeasons(email);
     }
 
     @RequestMapping("/api/location")
