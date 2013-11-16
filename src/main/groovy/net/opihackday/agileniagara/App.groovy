@@ -4,7 +4,8 @@ import groovy.json.JsonSlurper
 import groovyx.net.http.HTTPBuilder
 import net.opihackday.agileniagara.security.NiagaraAuthenticationProvider
 import net.opihackday.agileniagara.security.NiagaraUserDetailService
-import net.opihackday.agileniagara.service.RemoteUserService
+import net.opihackday.agileniagara.service.RabbitService
+import org.springframework.amqp.rabbit.core.RabbitTemplate
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.SpringApplication
@@ -50,14 +51,19 @@ class App extends WebSecurityConfigurerAdapter {
   HTTPBuilder googleHttpBuilder
 
   @Autowired
-  RemoteUserService remoteUserService
+  RememberMeServices rememberMeServices
 
   @Autowired
-  RememberMeServices rememberMeServices
+  RabbitService rabbitService
 
   @RequestMapping("/")
   String hello() {
     "index"
+  }
+
+  @RequestMapping("/test")
+  @ResponseBody String test() {
+    //remoteUserService.getUserByEmail("dan@foo.bar")
   }
 
   @RequestMapping("/auth")
@@ -81,9 +87,9 @@ class App extends WebSecurityConfigurerAdapter {
       "grant_type": 'authorization_code'])
 
     Map userInfo = new JsonSlurper().parseText("https://www.googleapis.com/oauth2/v1/tokeninfo?id_token=$idResp.id_token".toURL().text)
-    def email = userInfo.email
+    String email = userInfo.email
 
-    Map user = remoteUserService.getUserByEmail(email)
+    Map user = rabbitService.getUserByEmail(email)
     List authorities = user.authorities?.collect { String grant -> new SimpleGrantedAuthority(grant) }
 
     def auth = new UsernamePasswordAuthenticationToken(email, "", authorities)
