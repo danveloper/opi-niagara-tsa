@@ -11,6 +11,8 @@ repositories {
 dependencies {
   compile "org.codehaus.groovy:groovy-all:2.2.0-rc-3"
 
+  compile 'org.codehaus.groovy.modules.http-builder:http-builder:0.6'
+
   ['web', 'security'].each { module ->
     compile "org.springframework.boot:spring-boot-starter-$module:0.5.0.M6"
   }
