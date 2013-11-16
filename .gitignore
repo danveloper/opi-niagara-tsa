@@ -1,0 +1,7 @@
+*.class
+.gradle/
+out/
+production/
+*.iml
+*.ipr
+*.iws
