@@ -8,7 +8,7 @@ class UserController {
 
 	RemoteUserService userService;
 
-    @RequestMapping("/user/create")
+    @RequestMapping("/user")
     String create() {
         return userService.createUser();
     }
