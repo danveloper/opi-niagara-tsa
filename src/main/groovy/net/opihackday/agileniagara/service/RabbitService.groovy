@@ -3,11 +3,13 @@ package net.opihackday.agileniagara.service
 import org.joda.time.LocalDate
 import org.springframework.amqp.rabbit.core.RabbitTemplate
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.stereotype.Service
 
 /**
  * User: danielwoods
  * Date: 11/16/13
  */
+@Service
 class RabbitService {
 
   public static final String USER_EXCHANGE = "users";

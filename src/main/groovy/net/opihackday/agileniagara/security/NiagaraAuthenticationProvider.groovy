@@ -1,5 +1,7 @@
 package net.opihackday.agileniagara.security
 
+import net.opihackday.agileniagara.service.RabbitService
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
@@ -11,14 +13,16 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority
  */
 class NiagaraAuthenticationProvider implements AuthenticationProvider {
 
+  @Autowired
+  RabbitService rabbitService
+
   @Override
   Authentication authenticate(Authentication authentication) throws AuthenticationException {
     String email = authentication.name
 
     if (email.endsWith("objectpartners.com")) {
-      Map user = [email: email, authorities: ['ROLE_USER']]
-      List grants = user.authorities?.collect { String authority -> new SimpleGrantedAuthority(authority) }
-      return new UsernamePasswordAuthenticationToken(email, "", grants)
+      Map<String, String> user = rabbitService.getUserByEmail(email)
+      return new UsernamePasswordAuthenticationToken(email, "", [new SimpleGrantedAuthority(user.role)])
     } else {
       null
     }
