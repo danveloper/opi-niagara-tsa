@@ -6,7 +6,5 @@ package net.opihackday.agileniagara.service
  */
 public interface RemoteUserService {
 
-  Map getUserByEmail()
-
-  void createUser(Map user)
+  Map getUserByEmail(String email)
 }
