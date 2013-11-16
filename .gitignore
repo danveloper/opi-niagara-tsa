@@ -8,4 +8,6 @@ production/
 .classpath
 .project
 .settings
+.idea/
+
 bin
