@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/integration"
+             xmlns:beans="http://www.springframework.org/schema/beans"
+             xmlns:amqp="http://www.springframework.org/schema/integration/amqp"
+             xmlns:rabbit="http://www.springframework.org/schema/rabbit"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:context="http://www.springframework.org/schema/context"
+             xmlns:task="http://www.springframework.org/schema/task"
+             xsi:schemaLocation="http://www.springframework.org/schema/integration
+                                   http://www.springframework.org/schema/integration/spring-integration.xsd
+                                   http://www.springframework.org/schema/integration/amqp
+                                   http://www.springframework.org/schema/integration/amqp/spring-integration-amqp.xsd
+                                   http://www.springframework.org/schema/rabbit
+                                   http://www.springframework.org/schema/rabbit/spring-rabbit.xsd
+                                   http://www.springframework.org/schema/beans
+                                   http://www.springframework.org/schema/beans/spring-beans.xsd
+                                   http://www.springframework.org/schema/context
+                                   http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
+
+    <!-- RabbitMQ Configuration -->
+    <rabbit:connection-factory id="connectionFactory"
+                               host="lemur.cloudamqp.com"
+                               username="jzqonxoa"
+                               password="am3WlvBWtGJ95WIN4Uuxuu3uWdXYcYHJ"
+                               virtual-host="jzqonxoa"
+                               port="5672" />
+    <rabbit:admin connection-factory="connectionFactory" />
+
+    <rabbit:template id="userServiceRabbitTemplate" connection-factory="connectionFactory" exchange="userService" />
+
+    <!-- Exchange and Queue Configuration -->
+    <rabbit:queue id="recvQueue" name="recv" />
+    <rabbit:fanout-exchange name="userService">
+        <rabbit:bindings>
+            <rabbit:binding queue="recv" />
+        </rabbit:bindings>
+    </rabbit:fanout-exchange>
+
+
+</beans:beans>
