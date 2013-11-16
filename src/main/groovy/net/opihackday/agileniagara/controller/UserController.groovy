@@ -1,15 +1,18 @@
-import net.opihackday.agileniagara.service.RemoteUserService
-
+import net.opihackday.agileniagara.service.RabbitService
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.RequestMapping
 
 @Controller
 class UserController {
 
-	RemoteUserService userService;
+    @Autowired
+	RabbitService rabbitService;
 
-    @RequestMapping("/user")
+    @RequestMapping("/whoami")
     String create() {
-        return userService.createUser();
+
+        return SecurityContextHolder.context.authentication.principal
     }
 }

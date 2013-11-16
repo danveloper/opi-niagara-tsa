@@ -1,31 +1,39 @@
-import net.opihackday.agileniagara.service.BookingService
+import net.opihackday.agileniagara.service.RabbitService
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.stereotype.Controller
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
 
 @Controller
 class BookingController {
 
-    BookingService bookingService;
+    @Autowired
+    RabbitService bookingService;
 
     @RequestMapping("/api/season")
     String listSeasons() {
-        return bookingService.seasons();
+        return bookingService.getSeasons();
     }
 
     @RequestMapping("/api/location")
     String listLocations() {
-        return [name: ""];
+        return bookingService.getLocations();
     }
 
-    @RequestMapping("/api/booking/location/{id}")
-    String listLocations(String id) {
-        return [name: ""];
+    @RequestMapping("/api/booking/location/{locationId}/season/{seasonId}")
+    String listBookings(@PathVariable String locationId, @PathVariable String seasonId) {
+        return bookingService.getBookings(locationId, seasonId);
     }
 
     @RequestMapping("/api/booking")
-    String listLocations(String id) {
-        return [name: ""];
+    String createBooking(String locationId, String startDate, String endDate) {
+
+        String email = SecurityContextHolder?.context?.authentication?.principal;
+        if (email) {
+            return bookingService.createBooking(locationId, startDate, endDate, email);
+        }
+        throw new RuntimeException("User not authenticated");
     }
 
 }
