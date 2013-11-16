@@ -28,13 +28,8 @@
 
     <rabbit:template id="userServiceRabbitTemplate" connection-factory="connectionFactory" exchange="userService" />
 
-    <!-- Exchange and Queue Configuration -->
-    <rabbit:queue id="recvQueue" name="recv" />
-    <rabbit:fanout-exchange name="userService">
-        <rabbit:bindings>
-            <rabbit:binding queue="recv" />
-        </rabbit:bindings>
-    </rabbit:fanout-exchange>
-
-
+    <channel id="user-service-req"/>
+    <amqp:outbound-channel-adapter amqp-template="userServiceRabbitTemplate" channel="user-service-req" />
+    <gateway default-request-channel="user-service-req"
+             service-interface="net.opihackday.agileniagara.service.RemoteUserService" />
 </beans:beans>
