@@ -3,6 +3,7 @@ package net.opihackday.agileniagara
 import groovy.json.JsonSlurper
 import groovyx.net.http.HTTPBuilder
 import net.opihackday.agileniagara.security.NiagaraAuthenticationProvider
+import net.opihackday.agileniagara.security.NiagaraUserDetailService
 import net.opihackday.agileniagara.service.RemoteUserService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -12,12 +13,15 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.ImportResource
 import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.web.authentication.RememberMeServices
+import org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
@@ -104,7 +108,22 @@ class App extends WebSecurityConfigurerAdapter {
       .authorizeRequests()
       .antMatchers("/").hasRole("USER")
       .and().authenticationProvider(authenticationProvider())
+    http.formLogin().loginPage("/auth").permitAll()
+    http.rememberMe().rememberMeServices(rememberMeServices()).key("password")
 
+  }
+
+  @Bean
+  public UserDetailsService userDetailsService() {
+    new NiagaraUserDetailService()
+  }
+
+  @Bean
+  public RememberMeServices rememberMeServices() {
+    TokenBasedRememberMeServices rememberMeServices = new TokenBasedRememberMeServices("password", userDetailsService());
+    rememberMeServices.setCookieName("cookieName");
+    rememberMeServices.setParameter("rememberMe");
+    return rememberMeServices;
   }
 
   public static void main(String[] args) {
