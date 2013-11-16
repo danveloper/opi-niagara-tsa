@@ -19,10 +19,10 @@
 
     <!-- RabbitMQ Configuration -->
     <rabbit:connection-factory id="connectionFactory"
-                               host="lemur.cloudamqp.com"
-                               username="jzqonxoa"
-                               password="am3WlvBWtGJ95WIN4Uuxuu3uWdXYcYHJ"
-                               virtual-host="jzqonxoa"
+                               host="192.168.168.227"
+                               username="guest"
+                               password="guest"
+                               virtual-host="niagara"
                                port="5672" />
     <rabbit:admin connection-factory="connectionFactory" />
 

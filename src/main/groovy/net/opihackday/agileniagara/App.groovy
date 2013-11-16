@@ -5,7 +5,6 @@ import groovyx.net.http.HTTPBuilder
 import net.opihackday.agileniagara.security.NiagaraAuthenticationProvider
 import net.opihackday.agileniagara.security.NiagaraUserDetailService
 import net.opihackday.agileniagara.service.RabbitService
-import org.springframework.amqp.rabbit.core.RabbitTemplate
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.SpringApplication
@@ -15,7 +14,6 @@ import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.ImportResource
 import org.springframework.security.authentication.AuthenticationProvider
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
@@ -28,7 +26,6 @@ import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.ResponseBody
-import sun.plugin.liveconnect.SecurityContextHelper
 
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
@@ -65,7 +62,8 @@ class App extends WebSecurityConfigurerAdapter {
 
   @RequestMapping("/auth")
   @ResponseBody
-  String auth() {
+  String auth(HttpServletResponse response) {
+    //response.status = 401
     """\
     <script>
       document.location.href='https://accounts.google.com/o/oauth2/auth?client_id=64727165546.apps.googleusercontent.com&response_type=code&scope=openid%20email&redirect_uri=http://localhost:8080/nofakes&state=security_token%3D138r5719ru3e1%26url%3Dhttp://localhost:8080/nofakes'
@@ -76,7 +74,7 @@ class App extends WebSecurityConfigurerAdapter {
   @RequestMapping("/nofakes")
   @ResponseBody
   String nofakes(@RequestParam('code') String code, HttpServletRequest request, HttpServletResponse response) {
-    Map idResp = googleHttpBuilder.post(path: "/o/oauth2/token",body : [
+    Map idResp = googleHttpBuilder.post(path: "/o/oauth2/token", body: [
       code: code,
       "client_id": clientId,
       "client_secret": clientSecret,
@@ -118,7 +116,9 @@ class App extends WebSecurityConfigurerAdapter {
   protected void configure(HttpSecurity http) throws Exception {
     http
       .authorizeRequests()
-      .antMatchers("/").hasRole("USER")
+      .antMatchers("/").hasAnyRole("USER", "SENIOR", "SPURGAT")
+      .antMatchers("/api/**").hasAnyRole("USER", "SENIOR", "SPURGAT")
+      .antMatchers("/whoami").hasAnyRole("USER", "SENIOR", "SPURGAT")
       .and().authenticationProvider(authenticationProvider())
     http.formLogin().loginPage("/auth").permitAll()
     http.rememberMe().rememberMeServices(rememberMeServices()).key("password")
