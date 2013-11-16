@@ -61,9 +61,9 @@ class App extends WebSecurityConfigurerAdapter {
     "index"
   }
 
-  @RequestMapping("/test")
-  @ResponseBody String test() {
-    //remoteUserService.getUserByEmail("dan@foo.bar")
+  @RequestMapping("/whoami")
+  @ResponseBody String whoami() {
+    SecurityContextHolder.context.authentication.principal
   }
 
   @RequestMapping("/auth")
@@ -90,13 +90,22 @@ class App extends WebSecurityConfigurerAdapter {
     String email = userInfo.email
 
     Map user = rabbitService.getUserByEmail(email)
-    List authorities = user.authorities?.collect { String grant -> new SimpleGrantedAuthority(grant) }
+    if (!user) {
+      user = [email: email, role: "ROLE_USER"]
+    }
 
-    def auth = new UsernamePasswordAuthenticationToken(email, "", authorities)
+    SecurityContextHolder.context.getAuthentication()
+
+    def auth = new UsernamePasswordAuthenticationToken(email, "", [new SimpleGrantedAuthority(user.role)])
     SecurityContextHolder.context.authentication = auth
     rememberMeServices.loginSuccess(request, response, auth)
 
     response.sendRedirect("/")
+  }
+
+  @Bean
+  RabbitService rs() {
+    new RabbitService()
   }
 
   @Bean
