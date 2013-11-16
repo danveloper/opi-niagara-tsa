@@ -35,7 +35,7 @@ class BookingController {
 
         String email = SecurityContextHolder?.context?.authentication?.principal;
         if (email) {
-            return rabbitService.createBooking(locationId, startDate, endDate, email);
+            return rabbitService.createBooking(email, locationId, startDate, endDate);
         }
         throw new RuntimeException("User not authenticated");
     }
