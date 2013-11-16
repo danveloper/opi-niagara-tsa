@@ -11,6 +11,6 @@ class TestRabbit {
   static void main(_) {
     def ctx = new AnnotationConfigApplicationContext(App)
     def rabbit = ctx.getBean('rabbitTemplate')
-    println rabbit.convertSendAndReceive("booking", "booking.request", [username: "daniel.woods@objectpartners.com"])
+    println rabbit.convertSendAndReceive("booking", "location.list", [:])
   }
 }
