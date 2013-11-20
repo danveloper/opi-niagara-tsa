@@ -22,20 +22,20 @@ class RabbitService {
         (Map)rabbitTemplate.convertSendAndReceive(USER_EXCHANGE, "lookup", email)
     }
 
-    Map getSeasons() {
-        (Map)rabbitTemplate.convertSendAndReceive(BOOKING_EXCHANGE, "season.list", [:])
+    List getSeasons(String email) {
+        (List)rabbitTemplate.convertSendAndReceive(BOOKING_EXCHANGE, "season.list", [username:email])
     }
 
-    Map getLocations() {
-        (Map)rabbitTemplate.convertSendAndReceive(BOOKING_EXCHANGE, "location.list", [:])
+    List getLocations() {
+        (List)rabbitTemplate.convertSendAndReceive(BOOKING_EXCHANGE, "location.list", [:])
     }
 
-    Map getBookings(String locationId, String seasonId) {
-        (Map)rabbitTemplate.convertSendAndReceive(BOOKING_EXCHANGE, "booking.list", [locationId: locationId, seasonId: seasonId]);
+    List getBookings(String locationId, String seasonId) {
+        (List)rabbitTemplate.convertSendAndReceive(BOOKING_EXCHANGE, "booking.list", [locationId: locationId, seasonId: seasonId]);
     }
 
-    Map createBooking(String email, String locationId, LocalDate startDate, LocalDate endDate) {
-        def request = [username: email, locationId: locationId, startDate: startDate.toString(), endDate: startDate.toString()]
-        (Map)rabbitTemplate.convertSendAndReceive(BOOKING_EXCHANGE, "booking.request", email)
+    Map createBooking(String email, String locationId, String startDate, String endDate) {
+        def request = [username: email, locationId: locationId, startDate: startDate, endDate: endDate]
+        (Map)rabbitTemplate.convertSendAndReceive(BOOKING_EXCHANGE, "booking.request", request)
     }
 }
