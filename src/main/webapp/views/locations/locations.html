@@ -1,0 +1,7 @@
+<div class="jumbotron">
+    <p>Please select the location</p>
+    <ul class="list-group">
+        <li class="list-group-item" ng-repeat="location in locations" ng-click="select(location.id)">{{location.name}}</li>
+    </ul>
+    <button type="button" class="btn btn-default" ng-click="back()"><i class="fa fa-backward"></i></button>
+</div>

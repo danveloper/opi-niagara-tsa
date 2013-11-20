@@ -1,0 +1,14 @@
+$iconSpritePath: "../images/glyphicons-halflings.png";
+$iconWhiteSpritePath: "../images/glyphicons-halflings-white.png";
+
+@import "sass-bootstrap/lib/bootstrap";
+@import "compass/css3";
+
+$opi-red: rgba(158,35,0,1);
+
+/* Put your CSS here */
+html, body {
+  margin: 20px;
+  padding-top: 20px;
+  background: $opi-red;
+}

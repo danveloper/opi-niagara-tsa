@@ -1,0 +1,7 @@
+<div class="jumbotron">
+  <h1>Welcome to the OPI Cabinator</h1>
+  <p>Please select the season you want to schedule for</p>
+  <ul class="list-group">
+      <li class="list-group-item" ng-repeat="season in seasons" ng-click="select(season.id)">{{season.name}}</li>
+  </ul>
+</div>
